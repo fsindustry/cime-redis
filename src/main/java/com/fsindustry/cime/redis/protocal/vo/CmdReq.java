@@ -1,4 +1,4 @@
-package com.fsindustry.cime.redis.protocal.req;
+package com.fsindustry.cime.redis.protocal.vo;
 
 import com.fsindustry.cime.redis.protocal.cmd.Cmd;
 import com.fsindustry.cime.redis.protocal.codec.Codec;
@@ -17,7 +17,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class CmdReq<In, Out> implements Req {
+public class CmdReq<In, Out> implements BufferedReq {
 
     /**
      * 异步接收命令结果的promise对象
@@ -31,11 +31,14 @@ public class CmdReq<In, Out> implements Req {
 
     /**
      * 命令参数
+     * 可以是一个ByteBuf
+     * 可以是一个byte[]
+     * 可以是一个包含toString方法的对象
      */
     private Object[] params;
 
     /**
-     * 数据编解码器
+     * 数据序列化编解码器
      */
     private Codec codec;
 
@@ -50,5 +53,20 @@ public class CmdReq<In, Out> implements Req {
     @Override
     public boolean tryFailure(Throwable cause) {
         return resultPromise.tryFailure(cause);
+    }
+
+    @Override
+    public boolean trySuccess(Object result) {
+        return resultPromise.trySuccess((Out) result);
+    }
+
+    @Override
+    public Throwable cause() {
+        return resultPromise.cause();
+    }
+
+    @Override
+    public boolean isSuccess() {
+        return resultPromise.isSuccess();
     }
 }

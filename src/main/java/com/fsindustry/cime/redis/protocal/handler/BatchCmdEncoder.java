@@ -1,7 +1,7 @@
 package com.fsindustry.cime.redis.protocal.handler;
 
-import com.fsindustry.cime.redis.protocal.req.BatchCmdReq;
-import com.fsindustry.cime.redis.protocal.req.CmdReq;
+import com.fsindustry.cime.redis.protocal.vo.BatchCmdReq;
+import com.fsindustry.cime.redis.protocal.vo.CmdReq;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandler;

@@ -1,4 +1,4 @@
-package com.fsindustry.cime.redis.protocal.req;
+package com.fsindustry.cime.redis.protocal.vo;
 
 import java.util.List;
 
@@ -13,7 +13,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class BatchCmdReq implements Req {
+public class BatchCmdReq implements BufferedReq {
 
     /**
      * 异步接收命令结果的promise对象
@@ -43,5 +43,20 @@ public class BatchCmdReq implements Req {
     @Override
     public boolean tryFailure(Throwable cause) {
         return resultPromise.tryFailure(cause);
+    }
+
+    @Override
+    public boolean trySuccess(Object result) {
+        return resultPromise.trySuccess((Void) result);
+    }
+
+    @Override
+    public Throwable cause() {
+        return resultPromise.cause();
+    }
+
+    @Override
+    public boolean isSuccess() {
+        return resultPromise.isSuccess();
     }
 }

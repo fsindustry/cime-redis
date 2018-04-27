@@ -11,7 +11,4 @@ package com.fsindustry.cime.redis.model;
  */
 public interface Operator {
 
-
-
-
 }

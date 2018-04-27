@@ -16,8 +16,8 @@ import com.fsindustry.cime.redis.protocal.cmd.Cmd;
 import com.fsindustry.cime.redis.protocal.codec.Codec;
 import com.fsindustry.cime.redis.protocal.constant.ChannelType;
 import com.fsindustry.cime.redis.protocal.future.BasePromise;
-import com.fsindustry.cime.redis.protocal.req.BatchCmdReq;
-import com.fsindustry.cime.redis.protocal.req.CmdReq;
+import com.fsindustry.cime.redis.protocal.vo.BatchCmdReq;
+import com.fsindustry.cime.redis.protocal.vo.CmdReq;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;

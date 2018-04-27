@@ -1,7 +1,8 @@
 package com.fsindustry.cime.redis.protocal.handler;
 
-import com.fsindustry.cime.redis.protocal.req.CmdReq;
+import com.fsindustry.cime.redis.protocal.constant.MsgType;
 import com.fsindustry.cime.redis.protocal.util.BytesConverter;
+import com.fsindustry.cime.redis.protocal.vo.CmdReq;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
@@ -27,14 +28,6 @@ public class CmdEncoder extends MessageToByteEncoder<CmdReq<?, ?>> {
      * 消息分隔符，统一使用\r\n
      */
     private static final byte[] CRLF = "\r\n".getBytes();
-
-    /**
-     * 协议类型前缀：
-     * 二进制安全字符串类型：$
-     * 数组类型：*
-     */
-    private static final char BULK_STR_PREFIX = '$';
-    private static final char ARR_PREFIX = '*';
 
     /**
      * 私有化构造器
@@ -87,7 +80,7 @@ public class CmdEncoder extends MessageToByteEncoder<CmdReq<?, ?>> {
         try {
 
             // 写入数组前缀
-            out.writeByte(ARR_PREFIX);
+            out.writeByte(MsgType.ARRAY.getPrefix());
 
             // 根据请求参数个数确定数组长度：
             // +1是因为包含命令本身
@@ -160,7 +153,7 @@ public class CmdEncoder extends MessageToByteEncoder<CmdReq<?, ?>> {
      * 将数据编码为bulk string协议
      */
     private void writeBulk(ByteBuf out, byte[] arg) {
-        out.writeByte(BULK_STR_PREFIX);
+        out.writeByte(MsgType.BULK_STRING.getPrefix());
         out.writeBytes(BytesConverter.convert(arg.length));
         out.writeBytes(CRLF);
         out.writeBytes(arg);
@@ -168,7 +161,7 @@ public class CmdEncoder extends MessageToByteEncoder<CmdReq<?, ?>> {
     }
 
     private void writeBulk(ByteBuf out, ByteBuf arg) {
-        out.writeByte(BULK_STR_PREFIX);
+        out.writeByte(MsgType.BULK_STRING.getPrefix());
         out.writeBytes(BytesConverter.convert(arg.readableBytes()));
         out.writeBytes(CRLF);
         out.writeBytes(arg, arg.readerIndex(), arg.readableBytes());
