@@ -2,6 +2,7 @@ package com.fsindustry.cime.redis.exception;
 
 /**
  * redis异常基类
+ *
  * @author fuzhengxin
  */
 public class RedisException extends RuntimeException {

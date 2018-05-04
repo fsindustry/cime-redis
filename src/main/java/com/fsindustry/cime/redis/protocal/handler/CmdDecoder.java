@@ -19,8 +19,15 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
+import com.fsindustry.cime.redis.exception.RedisException;
+import com.fsindustry.cime.redis.exception.server.RedisAskException;
+import com.fsindustry.cime.redis.exception.server.RedisBusyException;
+import com.fsindustry.cime.redis.exception.server.RedisClusterDownException;
+import com.fsindustry.cime.redis.exception.server.RedisMovedException;
+import com.fsindustry.cime.redis.exception.server.RedisNoscriptException;
 import com.fsindustry.cime.redis.protocal.cmd.Cmd;
 import com.fsindustry.cime.redis.protocal.constant.ArrayDecodeStack;
+import com.fsindustry.cime.redis.protocal.constant.ErrorFlag;
 import com.fsindustry.cime.redis.protocal.constant.MsgType;
 import com.fsindustry.cime.redis.protocal.parser.Parser;
 import com.fsindustry.cime.redis.protocal.vo.BatchCmdReq;
@@ -164,11 +171,42 @@ public class CmdDecoder extends ReplayingDecoder<ArrayDecodeStack> {
         // 读取命令前缀
         char typePrifix = (char) in.readByte();
 
+        // 如果返回错误，则根据错误抛出相应异常
+        if (MsgType.ERROR.getPrefix() == typePrifix) {
+
+            String error = readString(in);
+
+            if (error.startsWith(ErrorFlag.MOVED)) {
+                String[] errorParts = error.split(" ");
+                int slot = Integer.valueOf(errorParts[1]);
+                String addr = errorParts[2];
+                throw new RedisMovedException(slot, addr);
+            } else if (error.startsWith(ErrorFlag.ASK)) {
+                String[] errorParts = error.split(" ");
+                int slot = Integer.valueOf(errorParts[1]);
+                String addr = errorParts[2];
+                throw new RedisAskException(slot, addr);
+            } else if (error.startsWith(ErrorFlag.CLUSTERDOWN)) {
+                throw new RedisClusterDownException(error);
+            } else if (error.startsWith(ErrorFlag.BUSY)) {
+                throw new RedisBusyException(error);
+            } else if (error.startsWith(ErrorFlag.NOSCRIPT)) {
+                throw new RedisNoscriptException(error);
+            } else if (error.startsWith(ErrorFlag.TRYAGAIN)) {
+                throw new RedisNoscriptException(error);
+            } else if (error.startsWith(ErrorFlag.LOADING)) {
+                throw new RedisNoscriptException(error);
+            } else if (error.startsWith(ErrorFlag.OOM)) {
+                throw new RedisNoscriptException(error);
+            } else if (error.startsWith(ErrorFlag._OOM)) {
+                throw new RedisNoscriptException(error);
+            } else {
+                throw new RedisException(error);
+            }
+        }
+
+        // 解析命令
         if (MsgType.STRING.getPrefix() == typePrifix) {
-
-            return readString(in);
-
-        } else if (MsgType.ERROR.getPrefix() == typePrifix) {
 
             return readString(in);
 
@@ -195,7 +233,10 @@ public class CmdDecoder extends ReplayingDecoder<ArrayDecodeStack> {
         if (in.readByte() == CR && in.readByte() != LF) {
             throw new IOException("Invalid EOF");
         }
-        return content.toString(CharsetUtil.UTF_8);
+
+        String result = content.toString(CharsetUtil.UTF_8);
+        content.release();
+        return result;
     }
 
     private int readInt(ByteBuf in) throws IOException {
