@@ -1,9 +1,15 @@
 package com.fsindustry.cime.redis.protocal.constant;
 
+import com.fsindustry.cime.redis.protocal.parser.DoubleParser;
+import com.fsindustry.cime.redis.protocal.parser.GeoPosParser;
+import com.fsindustry.cime.redis.protocal.parser.LongParser;
 import com.fsindustry.cime.redis.protocal.parser.Parser;
+import com.fsindustry.cime.redis.protocal.parser.StringListParser;
+import com.fsindustry.cime.redis.protocal.parser.StringParser;
 
 import io.netty.util.internal.StringUtil;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 
 /**
  * redis命令枚举
@@ -11,6 +17,7 @@ import lombok.AllArgsConstructor;
  * @author fuzhengxin
  */
 @AllArgsConstructor
+@Getter
 public enum CmdEnum {
 
     /**
@@ -34,15 +41,15 @@ public enum CmdEnum {
     CLUSTER_SETSLOT("cluster", "setslot", CmdType.CLUSTER, null),
     CLUSTER_SLAVES("cluster", "slaves", CmdType.CLUSTER, null),
     CLUSTER_SLOTS("cluster", "slots", CmdType.CLUSTER, null),
-    READONLY("cluster", "readonly", CmdType.CLUSTER, null),
-    READWRITE("cluster", "readwrite", CmdType.CLUSTER, null),
+    CLUSTER_READONLY("cluster", "readonly", CmdType.CLUSTER, null),
+    CLUSTER_READWRITE("cluster", "readwrite", CmdType.CLUSTER, null),
 
     /**
      * 连接相关命令
      */
     AUTH("auth", null, CmdType.CONNECTION, null),
     ECHO("echo", null, CmdType.CONNECTION, null),
-    PING("ping", null, CmdType.CONNECTION, null),
+    PING("ping", null, CmdType.CONNECTION, StringParser.class),
     QUIT("quit", null, CmdType.CONNECTION, null),
     SELECT("select", null, CmdType.CONNECTION, null),
     SWAPDB("echo", null, CmdType.CONNECTION, null),
@@ -50,12 +57,12 @@ public enum CmdEnum {
     /**
      * GEO相关命令
      */
-    GEOADD("geoadd", null, CmdType.GEO, null),
-    GEOHASH("geohash", null, CmdType.GEO, null),
-    GEOPOS("geopos", null, CmdType.GEO, null),
-    GEODIST("geodist", null, CmdType.GEO, null),
-    GEORADIUS("georadius", null, CmdType.GEO, null),
-    GEORADIUSBYMEMBER("georadiusbymember", null, CmdType.GEO, null),
+    GEOADD("geoadd", null, CmdType.GEO, LongParser.class),
+    GEOHASH("geohash", null, CmdType.GEO, StringListParser.class),
+    GEOPOS("geopos", null, CmdType.GEO, GeoPosParser.class),
+    GEODIST("geodist", null, CmdType.GEO, DoubleParser.class),
+    GEORADIUS("georadius", null, CmdType.GEO, StringListParser.class),
+    GEORADIUSBYMEMBER("georadiusbymember", null, CmdType.GEO, StringListParser.class),
 
     /**
      * hash相关命令
@@ -172,13 +179,13 @@ public enum CmdEnum {
     CONFIG_RESETSTAT("CONFIG", "RESETSTAT", CmdType.SERVER, null),
     CONFIG_REWRITE("CONFIG", "REWRITE", CmdType.SERVER, null),
     CONFIG_SET("CONFIG", "SET", CmdType.SERVER, null),
-    DBSIZE("DBSIZE", "load", CmdType.SERVER, null),
+    DBSIZE("DBSIZE", null, CmdType.SERVER, LongParser.class),
     DEBUG_OBJECT("DEBUG", "OBJECT", CmdType.SERVER, null),
     DEBUG_SEGFAULT("DEBUG", "SEGFAULT", CmdType.SERVER, null),
-    FLUSHALL("FLUSHALL", "load", CmdType.SERVER, null),
-    FLUSHDB("FLUSHDB", "load", CmdType.SERVER, null),
-    INFO("INFO", "load", CmdType.SERVER, null),
-    LASTSAVE("LASTSAVE", "load", CmdType.SERVER, null),
+    FLUSHALL("FLUSHALL", null, CmdType.SERVER, null),
+    FLUSHDB("FLUSHDB", null, CmdType.SERVER, null),
+    INFO("INFO", null, CmdType.SERVER, null),
+    LASTSAVE("LASTSAVE", null, CmdType.SERVER, null),
     MEMORY_DOCTOR("MEMORY", "DOCTOR", CmdType.SERVER, null),
     MEMORY_HELP("MEMORY", "HELP", CmdType.SERVER, null),
     MEMORY_MALLOC_STATS("MEMORY", "MALLOC-STATS", CmdType.SERVER, null),
@@ -281,7 +288,7 @@ public enum CmdEnum {
 
     private CmdType cmdType;
 
-    private Class<? extends Parser> converterCls;
+    private Class<? extends Parser> respParserCls;
 
     public boolean hasSubCmd() {
         return !StringUtil.isNullOrEmpty(subName);

@@ -1,7 +1,5 @@
 package com.fsindustry.cime.redis.protocal.codec;
 
-import io.netty.buffer.ByteBuf;
-
 /**
  * 数据编解码器
  *
@@ -10,14 +8,28 @@ import io.netty.buffer.ByteBuf;
 public interface Codec {
 
     /**
-     * 除hash表以外的其它数据类型使用的解码器
+     * key解码器
      *
      * @return decoder 解码器
      */
-    Decoder<Object> getValueDecoder();
+    Decoder getKeyDecoder();
 
     /**
-     * 除hash表以外的其它数据类型使用的编码器
+     * key编码器
+     *
+     * @return encoder
+     */
+    Encoder getKeyEncoder();
+
+    /**
+     * value解码器
+     *
+     * @return decoder 解码器
+     */
+    Decoder getValueDecoder();
+
+    /**
+     * value编码器
      *
      * @return encoder
      */
@@ -28,7 +40,7 @@ public interface Codec {
      *
      * @return decoder
      */
-    Decoder<Object> getMapValueDecoder();
+    Decoder getMapValueDecoder();
 
     /**
      * hash表value使用的编码器
@@ -42,7 +54,7 @@ public interface Codec {
      *
      * @return decoder
      */
-    Decoder<Object> getMapKeyDecoder();
+    Decoder getMapKeyDecoder();
 
     /**
      * hash表value使用的编码器
@@ -68,9 +80,9 @@ public interface Codec {
          *
          * @param in 待编码的对象
          *
-         * @return ByteBuf
+         * @return 编码后数据存放的byte[]
          */
-        ByteBuf encode(Object in);
+        byte[] encode(Object in);
     }
 
     /**
@@ -83,10 +95,10 @@ public interface Codec {
         /**
          * 将ByteBuf中的数据解码变为具体的对象
          *
-         * @param buf 存放数据的ByteBuf对象
+         * @param data 存放数据的byte[]
          *
          * @return 解码后的对象
          */
-        Out decode(ByteBuf buf);
+        Out decode(byte[] data);
     }
 }

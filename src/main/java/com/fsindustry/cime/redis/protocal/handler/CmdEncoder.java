@@ -39,7 +39,7 @@ public class CmdEncoder extends MessageToByteEncoder<CmdReq<?, ?>> {
      * 懒汉式单实例
      */
     private static class Singleton {
-        private final static CmdEncoder INSTANCE = new CmdEncoder();
+        private static final CmdEncoder INSTANCE = new CmdEncoder();
     }
 
     /**
@@ -128,7 +128,6 @@ public class CmdEncoder extends MessageToByteEncoder<CmdReq<?, ?>> {
      * 将参数转换为ByteBuf
      */
     private ByteBuf encodeParam(Object param) {
-
         // 如果是byte[]
         if (param instanceof byte[]) {
             byte[] payload = (byte[]) param;
@@ -137,6 +136,7 @@ public class CmdEncoder extends MessageToByteEncoder<CmdReq<?, ?>> {
             return out;
         }
 
+        // TODO 优化：去掉该类型入参
         // 如果是ByteBuf，直接返回引用
         if (param instanceof ByteBuf) {
             return (ByteBuf) param;

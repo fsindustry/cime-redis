@@ -11,7 +11,7 @@ import com.fsindustry.cime.redis.protocal.constant.MsgType;
 public interface Parser<Out> {
 
     /**
-     * 将ByteBuf输入转换为指定对象
+     * 将Long/String/byte[]混合对象转换为目标对象
      *
      * @param in      输入对象
      * @param msgType 输出对象

@@ -41,5 +41,5 @@ public class Cmd<Out> {
     /**
      * 命令解析器，用于解析命令
      */
-    private final Parser respParser;
+    private final Parser<Out> respParser;
 }

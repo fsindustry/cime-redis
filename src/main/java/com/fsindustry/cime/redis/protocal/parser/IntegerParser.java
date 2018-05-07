@@ -12,6 +12,7 @@ public class IntegerParser implements Parser<Integer> {
 
     @Override
     public Integer parse(Object in, MsgType msgType, Codec codec) {
+
         if (!MsgType.INTEGER.equals(msgType)
                 || !(in instanceof Long)) {
             throw new UnsupportedOperationException("Unsupported msgType:" + msgType);

@@ -103,8 +103,9 @@ public class CmdDecoder extends ReplayingDecoder<ArrayDecodeStack> {
 
             } catch (Exception e) {
 
-                log.error("Unable to decode data. channel: {} message: {}", ctx.channel(),
-                        in.toString(0, in.writerIndex(), CharsetUtil.UTF_8), e);
+                String msg = String.format("Unable to decode data. channel: %s message: %s", ctx.channel(),
+                        in.toString(0, in.writerIndex(), CharsetUtil.UTF_8));
+                log.error(msg, e);
 
                 // 如果命令执行异常，则执行下一条命令
                 req.tryFailure(e);
@@ -252,12 +253,16 @@ public class CmdDecoder extends ReplayingDecoder<ArrayDecodeStack> {
     private long readLong(ByteBuf in) throws IOException {
 
         // 判断符号
-        final boolean isNag = (in.readByte() == NEGATIVE_FLAG);
+        byte current = in.readByte();
+        final boolean isNag = (current == NEGATIVE_FLAG);
+        if (isNag) {
+            current = in.readByte();
+        }
 
         long value = 0;
-        byte current;
         while (true) {
 
+            value = value * 10 + current - ZERO;
             current = in.readByte();
 
             // 如果读到\r\n，则跳出循环
@@ -268,25 +273,29 @@ public class CmdDecoder extends ReplayingDecoder<ArrayDecodeStack> {
                 }
                 break;
             }
-            value = value * 10 + current - ZERO;
         }
 
         return (isNag ? -value : value);
     }
 
-    private ByteBuf readBulkString(ByteBuf in) throws IOException {
+    private byte[] readBulkString(ByteBuf in) throws IOException {
 
         int size = readInt(in);
         if (size == -1) {
             return null;
         }
+
+        // 切片方式，和in共享底层存储，故不用显式释放
         ByteBuf buffer = in.readSlice(size);
         int cr = in.readByte();
         int lf = in.readByte();
         if (cr != CR || lf != LF) {
             throw new IOException("Improper line ending: " + cr + ", " + lf);
         }
-        return buffer;
+        byte[] result = new byte[buffer.readableBytes()];
+        buffer.getBytes(0, result);
+
+        return result;
     }
 
     private List<Object> readArray(ByteBuf in) throws IOException {

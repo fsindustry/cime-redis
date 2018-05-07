@@ -334,7 +334,7 @@ public abstract class BaseConnection implements Connection {
     }
 
     @Override
-    public <In, Out> Out sync(Codec codec, Cmd<In> cmd, Object... params) {
+    public <In, Out> Out sync(Codec codec, Cmd<Out> cmd, Object... params) {
 
         // 发起异步命令
         Future<Out> future = async(codec, cmd, params);
@@ -344,22 +344,22 @@ public abstract class BaseConnection implements Connection {
     }
 
     @Override
-    public <In, Out> Future<Out> async(Cmd<In> cmd, Object... params) {
+    public <In, Out> Future<Out> async(Cmd<Out> cmd, Object... params) {
         return async(null, cmd, params);
     }
 
     @Override
-    public <In, Out> Future<Out> async(long timeout, Cmd<In> cmd, Object... params) {
+    public <In, Out> Future<Out> async(long timeout, Cmd<Out> cmd, Object... params) {
         return async(timeout, null, cmd, params);
     }
 
     @Override
-    public <In, Out> Future<Out> async(Codec codec, Cmd<In> cmd, Object... params) {
+    public <In, Out> Future<Out> async(Codec codec, Cmd<Out> cmd, Object... params) {
         return async(-1, codec, cmd, params);
     }
 
     @Override
-    public <In, Out> Future<Out> async(long timeout, Codec codec, Cmd<In> cmd, Object... params) {
+    public <In, Out> Future<Out> async(long timeout, Codec codec, Cmd<Out> cmd, Object... params) {
 
         Promise<Out> promise = new BasePromise<>();
         if (-1 == timeout) {

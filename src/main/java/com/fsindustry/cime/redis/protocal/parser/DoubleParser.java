@@ -6,24 +6,21 @@ import com.fsindustry.cime.redis.protocal.constant.MsgType;
 import io.netty.util.CharsetUtil;
 
 /**
- * 将输入对象转换为字符串
+ * 将输入对象转换为double值
  *
  * @author fuzhengxin
  */
-public class StringParser implements Parser<String> {
+public class DoubleParser implements Parser<Double> {
 
     @Override
-    public String parse(Object in, MsgType msgType, Codec codec) {
+    public Double parse(Object in, MsgType msgType, Codec codec) {
 
-        // 如果是普通字符串，直接返回
-        if (MsgType.STRING.equals(msgType)
-                && in instanceof String) {
-            return (String) in;
-        }
         // 如果是二进制字符串，则转码成字符串
-        else if (MsgType.BULK_STRING.equals(msgType)
+        if (MsgType.BULK_STRING.equals(msgType)
                 && in instanceof byte[]) {
-            return new String((byte[]) in, CharsetUtil.UTF_8);
+
+            String value = new String((byte[]) in, CharsetUtil.UTF_8);
+            return Double.valueOf(value);
         } else {
             throw new UnsupportedOperationException("Unsupported msgType:" + msgType);
         }

@@ -1,5 +1,6 @@
 package com.fsindustry.cime.redis.protocal.conn;
 
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import com.fsindustry.cime.redis.protocal.cmd.Cmd;
@@ -111,7 +112,7 @@ public interface Connection {
      *
      * @return 执行结果
      */
-    <In, Out> Out sync(Codec codec, Cmd<In> cmd, Object... params);
+    <In, Out> Out sync(Codec codec, Cmd<Out> cmd, Object... params);
 
     /**
      * 异步执行命令
@@ -123,7 +124,7 @@ public interface Connection {
      *
      * @return 输出类型future对象
      */
-    <In, Out> Future<Out> async(Cmd<In> cmd, Object... params);
+    <In, Out> Future<Out> async(Cmd<Out> cmd, Object... params);
 
     /**
      * 异步执行命令
@@ -136,7 +137,7 @@ public interface Connection {
      *
      * @return 输出类型future对象
      */
-    <In, Out> Future<Out> async(long timeout, Cmd<In> cmd, Object... params);
+    <In, Out> Future<Out> async(long timeout, Cmd<Out> cmd, Object... params);
 
     /**
      * 异步执行命令
@@ -149,7 +150,7 @@ public interface Connection {
      *
      * @return 输出类型future对象
      */
-    <In, Out> Future<Out> async(Codec codec, Cmd<In> cmd, Object... params);
+    <In, Out> Future<Out> async(Codec codec, Cmd<Out> cmd, Object... params);
 
     /**
      * 异步执行命令
@@ -163,7 +164,7 @@ public interface Connection {
      *
      * @return 输出类型future对象
      */
-    <In, Out> Future<Out> async(long timeout, Codec codec, Cmd<In> cmd, Object... params);
+    <In, Out> Future<Out> async(long timeout, Codec codec, Cmd<Out> cmd, Object... params);
 
     /**
      * 判断连接是否可以正常使用
@@ -204,4 +205,21 @@ public interface Connection {
      * @param cause 异常对象
      */
     void tryFailure(Throwable cause);
+
+    /**
+     * ping命令
+     *
+     * @return 正常，返回PONE
+     */
+    Future<String> ping();
+
+    /**
+     * keys命令
+     *
+     * @param pattern key的格式
+     * @param codec   编解码器，用于key格式解码
+     *
+     * @return 包含解码结果的Future对象
+     */
+    Future<Set<Object>> keys(byte[] pattern, Codec codec);
 }
