@@ -420,7 +420,7 @@ public abstract class BaseConnection implements Connection {
     public void close() {
 
         // 触发关闭操作，同步等待完成
-        Future<Connection> future = connectAsync().syncUninterruptibly();
+        Future<Void> future = closeAsync().syncUninterruptibly();
 
         // 抛出异常
         if (!future.isSuccess()) {

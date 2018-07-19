@@ -1,0 +1,6 @@
+service:
+    name: "service_masterslave"
+    clusters:
+        - deployMode: "masterslave"
+          redis:
+

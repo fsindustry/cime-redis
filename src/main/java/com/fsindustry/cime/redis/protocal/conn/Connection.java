@@ -1,6 +1,5 @@
 package com.fsindustry.cime.redis.protocal.conn;
 
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import com.fsindustry.cime.redis.protocal.cmd.Cmd;
@@ -206,20 +205,4 @@ public interface Connection {
      */
     void tryFailure(Throwable cause);
 
-    /**
-     * ping命令
-     *
-     * @return 正常，返回PONE
-     */
-    Future<String> ping();
-
-    /**
-     * keys命令
-     *
-     * @param pattern key的格式
-     * @param codec   编解码器，用于key格式解码
-     *
-     * @return 包含解码结果的Future对象
-     */
-    Future<Set<Object>> keys(byte[] pattern, Codec codec);
 }

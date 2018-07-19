@@ -1,21 +1,17 @@
 package com.fsindustry.cime.redis.protocal.conn;
 
 import java.net.InetSocketAddress;
-import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 import com.fsindustry.cime.redis.protocal.cmd.Cmds;
-import com.fsindustry.cime.redis.protocal.codec.StringCodec;
 import com.fsindustry.cime.redis.protocal.constant.ChannelType;
 
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import io.netty.util.CharsetUtil;
-import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.Promise;
 import lombok.extern.slf4j.Slf4j;
 
@@ -33,6 +29,7 @@ public class PlainConnectionTest {
         // 初始化配置
         ConnectionConfig connectionConfig = new ConnectionConfig();
         connectionConfig.setChannelType(ChannelType.PLAIN);
+        // TODO 注意：用本地环境
         connectionConfig.setAddress(new InetSocketAddress("127.0.0.1", 6379));
         connectionConfig.setCmdTimeoutMs(60 * 1000);
         connectionConfig.setReconnectIntervalMs(10 * 1000);
@@ -84,7 +81,6 @@ public class PlainConnectionTest {
         Connection connection1 = connectionFuture.get();
         Assert.assertNotNull(connection1);
         Assert.assertTrue(connection == connection1);
-        ping();
     }
 
     @Test
@@ -93,7 +89,6 @@ public class PlainConnectionTest {
         // 同步初始化连接
         connection.connect();
 
-        ping();
     }
 
     @Test
@@ -181,19 +176,4 @@ public class PlainConnectionTest {
     public void getCreateTime() throws Exception {
     }
 
-    @Test
-    public void ping() throws Exception {
-        connection.connect();
-        Future<String> result = connection.ping();
-        Assert.assertEquals("PONG", result.get());
-    }
-
-    @Test
-    public void keys() throws Exception {
-        connection.connect();
-        Future<Set<Object>> result = connection.keys("*".getBytes(CharsetUtil.UTF_8), new StringCodec());
-
-        System.out.println(result.get());
-
-    }
 }

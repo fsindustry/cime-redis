@@ -5,13 +5,11 @@ import java.util.Set;
 import com.fsindustry.cime.redis.protocal.constant.CmdEnum;
 import com.fsindustry.cime.redis.protocal.constant.MsgType;
 import com.fsindustry.cime.redis.protocal.parser.KeySetParser;
+import com.fsindustry.cime.redis.protocal.parser.LongParser;
 import com.fsindustry.cime.redis.protocal.parser.StringParser;
 
 /**
- * 命令容器，存放创建好的命令对象
- * <p>
- * 命令对象无状态、可重用，不需要每次创建，因而启动时，创建单例放入专门的容器
- * </p>
+ * 存放创建好的命令对象，便于重用
  *
  * @author fuzhengxin
  */
@@ -29,4 +27,9 @@ public interface Cmds {
             MsgType.ARRAY,
             new KeySetParser());
 
+    Cmd<Long> DBSIZE = new Cmd<>(CmdEnum.DBSIZE.getName(),
+            CmdEnum.DBSIZE.getSubName(),
+            CmdEnum.DBSIZE.getCmdType(),
+            MsgType.INTEGER,
+            new LongParser());
 }
